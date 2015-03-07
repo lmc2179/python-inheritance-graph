@@ -6,3 +6,9 @@ class B(A):
 
 class C(B):
     pass
+
+class D(B):
+    pass
+
+class E(A):
+    pass

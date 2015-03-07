@@ -1,14 +1,21 @@
 import unittest
-from python_inheritance_graph import InheritanceGraphMaker
+import python_inheritance_graph
 
 class ModuleReadTest(unittest.TestCase):
     def test_module_read(self):
         import test_module
-        inheritance_graph_maker = InheritanceGraphMaker()
+        inheritance_graph_maker = python_inheritance_graph.InheritanceGraphMaker()
         inheritance_graph_maker.add_module(test_module)
         inheritance_graph = inheritance_graph_maker.build_graph()
-        print(inheritance_graph.node)
         print(inheritance_graph.edge)
+
+    def test_module_draw(self):
+        import test_module
+        inheritance_graph_maker = python_inheritance_graph.InheritanceGraphMaker()
+        inheritance_graph_maker.add_module(test_module)
+        inheritance_graph = inheritance_graph_maker.build_graph()
+        python_inheritance_graph.draw(inheritance_graph)
+
 
 if __name__ == '__main__':
     unittest.main()
