@@ -7,7 +7,7 @@ class ModuleReadTest(unittest.TestCase):
         inheritance_graph_maker = python_inheritance_graph.InheritanceGraphMaker()
         inheritance_graph_maker.add_module(test_module)
         inheritance_graph = inheritance_graph_maker.build_graph()
-        print(inheritance_graph.edge)
+        print(inheritance_graph.node)
 
     def test_module_draw(self):
         import test_module

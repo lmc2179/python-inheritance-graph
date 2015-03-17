@@ -24,7 +24,15 @@ class InheritanceGraphMaker(object):
         self.class_list.append(cls)
 
 def draw(inheritance_graph):
-    layout = networkx.shell_layout(inheritance_graph)
+    layout = layout_factory(inheritance_graph)
     networkx.draw(inheritance_graph, layout)
     networkx.draw_networkx_labels(inheritance_graph,pos=layout)
     plt.show()
+
+def layout_factory(G):
+    y = 0.5
+    sorted_nodes = networkx.topological_sort(G)
+    layout = {}
+    for n in sorted_nodes:
+        layout[n] = (0.5, y)
+    return  layout
