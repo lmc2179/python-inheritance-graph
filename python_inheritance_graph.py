@@ -39,7 +39,7 @@ def layout_factory(G):
 
 def _divide_line(l,r,n):
     if n < 0:
-        return [] # This is a bit of a hack
+        return [] # This is a bit of a hack; the correct thing to do is not call this for empty child groups
     delta = (1.0*r-l)/(n+1)
     return [l + delta*i for i in range(0,n+2)]
 
