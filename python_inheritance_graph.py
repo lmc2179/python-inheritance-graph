@@ -2,6 +2,7 @@ import functools
 import networkx
 import inspect
 import matplotlib.pyplot as plt
+from collections import deque
 
 class InheritanceGraphMaker(object):
     def __init__(self):
@@ -37,42 +38,30 @@ def layout_factory(G):
     return get_tree_layout(root, depth, G)
 
 def _divide_line(l,r,n):
+    if n < 0:
+        return [] # This is a bit of a hack
     delta = (1.0*r-l)/(n+1)
     return [l + delta*i for i in range(0,n+2)]
 
 def get_tree_layout(root, depth, G):
     delta = 1.0/(depth+1)
-    nodes = [[root]]
-    bounds = [(0,1)]
+    node_groups = deque([[root]])
+    group_bounds = deque([(0,1)])
     layout = {}
     y = 1.0
-    while nodes and all([len(group) > 0 for group in nodes]):
-        x_layouts = _get_node_layouts(nodes, bounds)
-        for x,n in zip(x_layouts, reduce_list(nodes)):
-            layout[n] = (x, y*delta)
-        nodes, bounds = _get_next_level(reduce_list(nodes), G)
+    while node_groups:
+        for group, bound in zip(node_groups, group_bounds):
+            x_layouts = _get_node_layouts(group, bound)
+            for x,n in zip(x_layouts, group):
+                layout[n] = (x, y*delta)
+            child_groups = [G.predecessors(n) for n in group]
+            child_bound_partitions = _divide_line(bound[0], bound[1], len(child_groups)-1)
+            child_bounds = [(l,r) for l,r in zip(child_bound_partitions[:-1], child_bound_partitions[1:])]
+            node_groups = deque(child_groups)
+            group_bounds = deque(child_bounds)
         y -= 1
     return layout
 
-def _get_node_layouts(node_groups, group_bounds):
-    x_groups = [_divide_line(b[0], b[1], len(g)) for g,b in zip(node_groups, group_bounds)]
-    x_layout = reduce_no_duplicates(x_groups)
+def _get_node_layouts(group, bound):
+    x_layout = _divide_line(bound[0], bound[1], len(group))
     return x_layout[1:-1]
-
-def _get_next_level(nodes, G):
-    next_level_groups = [G.predecessors(n) for n in nodes]
-    #TODO: Group bounds should be within previous group bounds
-    group_boundaries = _divide_line(0.0, 1.0, len(next_level_groups)-1)
-    new_bounds = list(zip(group_boundaries[:-1], group_boundaries[1:]))
-    return next_level_groups, new_bounds
-
-def reduce_list(L):
-    return functools.reduce(lambda l1,l2:l1+l2, L)
-
-def reduce_no_duplicates(L):
-    unique_reduced_L = []
-    for element in reduce_list(L):
-        if not unique_reduced_L or unique_reduced_L[-1] != element:
-            unique_reduced_L.append(element)
-    return unique_reduced_L
-
