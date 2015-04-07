@@ -27,7 +27,7 @@ class InheritanceGraphMaker(object):
 
 def draw(inheritance_graph):
     layout = layout_factory(inheritance_graph)
-    networkx.draw(inheritance_graph, layout)
+    networkx.draw(inheritance_graph, layout, node_color='w', linewidths=0.0)
     networkx.draw_networkx_labels(inheritance_graph,pos=layout)
     plt.show()
 
